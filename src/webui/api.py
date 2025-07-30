@@ -75,11 +75,15 @@ async def run_task(request: RunTaskRequest):
     # 7. Thực thi agent
     try:
         result = await agent.run()
-        return JSONResponse(content={
+        response = {
             "status": "success",
             "task_name": request.task_name,
-            "result": str(result)
-        })
+            "final_result": result.final_result() if hasattr(result, "final_result") else None,
+            "duration_seconds": result.total_duration_seconds() if hasattr(result, "total_duration_seconds") else None,
+            "total_input_tokens": result.total_input_tokens() if hasattr(result, "total_input_tokens") else None,
+            "errors": result.errors() if hasattr(result, "errors") else None,
+        }
+        return JSONResponse(content=response)
     except Exception as e:
         return JSONResponse(content={
             "status": "error",
