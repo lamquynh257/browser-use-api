@@ -23,8 +23,15 @@ async def run_task(request: RunTaskRequest):
     webui_manager = WebuiManager()
     webui_manager.init_browser_use_agent()
 
-    # 2. Khởi tạo CustomBrowser với config mặc định (tắt headless)
-    browser_config = BrowserConfig(headless=False)
+    # 2. Khởi tạo CustomBrowser với config mặc định (tắt headless, full màn hình)
+    browser_config = BrowserConfig(
+        headless=False,
+        extra_browser_args=["--start-maximized"],
+        new_context_config=BrowserContextConfig(
+            window_width=1920,
+            window_height=1080
+        )
+    )
     webui_manager.bu_browser = CustomBrowser(config=browser_config)
 
     # 3. Khởi tạo BrowserContext
@@ -44,7 +51,7 @@ async def run_task(request: RunTaskRequest):
     try:
         llm = get_llm_model(
             provider="google",
-            model_name="gemini-2.0-flash",
+            model_name="gemini-2.5-flash",
             temperature=0.7,
             base_url=None,
             api_key=google_api_key
